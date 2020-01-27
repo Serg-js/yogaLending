@@ -112,4 +112,31 @@ window.addEventListener('DOMContentLoaded', function() {
 
     setClock('timer', deadline);
 
+    // Модальное окно
+    let more = document.querySelector('.more'),
+        overlay = document.querySelector('.overlay'),
+        close = document.querySelector('.popup-close'),
+        descriptBtn = document.querySelectorAll('.description-btn');
+
+    descriptBtn.forEach(function(item) {
+        item.addEventListener('click', function() {
+            overlay.style.display = 'block';
+        });
+    });
+
+      
+    more.addEventListener('click', function() {
+        overlay.style.display = 'block';
+        this.classList.add('more-splash'); // Подключили анимацию, обратившись к кнопке через this
+        document.body.style.overflow = 'hidden'; //Запрещаем прокрутку страницы когда открыто модальное окно
+    });
+
+    close.addEventListener('click', function() {
+        overlay.style.display = 'none';
+        more.classList.remove('more-splash');
+        document.body.style.overflow = ''; // Разрешаем прокрутку страницы после закрытия модального окна
+    });
+
+
+
 });
