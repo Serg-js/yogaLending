@@ -137,6 +137,93 @@ window.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = ''; // Разрешаем прокрутку страницы после закрытия модального окна
     });
 
+    //Form
+    //Создаем объект, в котором будут содержаться различные состояния нашего запроса
+    let message = {
+        loading: 'Загруска...', //Показываем когда запрос еще не обработан
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так'
+    };
 
+    let form = document.querySelector('.main-form'),
+        input = form.getElementsByTagName('input'),
+        statusMessage = document.createElement('div'), // Создали дв для сообщений message
+        contactForm = document.getElementById('form'),
+        inputContactForm = contactForm.getElementsByTagName('input');
+
+    
+    statusMessage.classList.add('status');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Сбросили действия браузера по умолчанию. Без этого после отправки формы страница перезагружается
+        form.appendChild(statusMessage); // Вставляем наш див с сообщением о статусе в форму
+
+        //создаем запрос для отправки данных на сервер
+        let request = new XMLHttpRequest();
+        // настраиваем наш запрос
+        request.open('POST', 'server.php');
+        //настраиваем заголовки http запроса
+        // request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); // Обычный формат
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8'); //JSON формат
+
+        //Получим данные, которые ввел пользователь
+        let formData = new FormData(form);
+
+        let obj = {};
+        formData.forEach(function(value, key) {
+            obj[key] = value;
+        });
+        let json = JSON.stringify(obj);
+
+        // request.send(formData); // Обычный формат
+        request.send(json); //JSON формат
+
+        request.addEventListener('readystatechange', function() {
+            if(request.readyState < 4) {
+                statusMessage.innerHTML = message.loading;
+            } else if(request.readyState === 4 && request.status == 200) {
+                statusMessage.innerHTML = message.success;
+            } else {
+                statusMessage.innerHTML = message.failure;
+            }
+        });
+
+        for(let i = 0; i < input.length; i++) {
+            input[i].value = '';
+        }
+    });
+
+    contactForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        contactForm.appendChild(statusMessage);
+
+        let request = new XMLHttpRequest();
+        request.open('POST', 'server.php');
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        let formData = new FormData(form);
+
+        let obj = {};
+        formData.forEach(function(value, key) {
+            obj[key] = value;
+        });
+        let json = JSON.stringify(obj);
+
+        request.send(json);
+
+        request.addEventListener('readystatechange', function() {
+            if(request.readyState < 4) {
+                statusMessage.innerHTML = message.loading;
+            } else if(request.readyState === 4 && request.status == 200) {
+                statusMessage.innerHTML = message.success;
+            } else {
+                statusMessage.innerHTML = message.failure;
+            }
+        });
+
+        for(let i = 0; i < inputContactForm.length; i++) {
+            inputContactForm[i].value = '';
+        }
+    });
 
 });
